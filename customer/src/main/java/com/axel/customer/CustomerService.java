@@ -14,7 +14,8 @@ public record CustomerService(CustomerRepository customerRepository, RestTemplat
         // todo: check if email is valid
         // todo: check if email is not taken
         customerRepository.saveAndFlush(customer);
-        // todo: check if fraudster
+
+        // check if fraudster
         FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
                 "http://localhost:8081/api/v1/fraud-check/{customerId}",
                 FraudCheckResponse.class,
