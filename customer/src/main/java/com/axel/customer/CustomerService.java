@@ -2,11 +2,13 @@ package com.axel.customer;
 
 import com.axel.clients.fraud.FraudCheckResponse;
 import com.axel.clients.fraud.FraudClient;
+import com.axel.clients.notification.NotificationClient;
+import com.axel.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 @Service
-public record CustomerService(CustomerRepository customerRepository, RestTemplate restTemplate, FraudClient fraudClient) {
+public record CustomerService(CustomerRepository customerRepository, NotificationClient notificationClient, FraudClient fraudClient) {
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
                 .firstName(request.firstName())
@@ -23,6 +25,15 @@ public record CustomerService(CustomerRepository customerRepository, RestTemplat
         if (fraudCheckResponse.isFraudster()) {
             throw new IllegalStateException("fraudster");
         }
-        // todo: send notification
+
+        // send notification
+        // todo : make it async, add to queue
+        notificationClient.sendNotification(
+                new NotificationRequest(
+                        customer.getId(),
+                        customer.getEmail(),
+                        String.format("Hi %s, welcome !", customer.getFirstName())
+                )
+        );
     }
 }

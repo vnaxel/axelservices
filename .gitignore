@@ -1,5 +1,6 @@
-/customer/target/classes/
-/fraud/target/classes/
-/eureka-server/target/classes/
+/customer/target/classes
+/fraud/target/classes
+/eureka-server/target/classes
 /clients/target/classes
+/notification/target/classes
 /.idea/
