@@ -3,4 +3,5 @@
 /eureka-server/target/classes
 /clients/target/classes
 /notification/target/classes
+/apigw/target/classes
 /.idea/
