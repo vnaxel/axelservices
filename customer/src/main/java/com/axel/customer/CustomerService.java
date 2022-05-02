@@ -1,14 +1,17 @@
 package com.axel.customer;
 
+import com.axel.amqp.RabbitMQMessageProducer;
 import com.axel.clients.fraud.FraudCheckResponse;
 import com.axel.clients.fraud.FraudClient;
-import com.axel.clients.notification.NotificationClient;
 import com.axel.clients.notification.NotificationRequest;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
-public record CustomerService(CustomerRepository customerRepository, NotificationClient notificationClient, FraudClient fraudClient) {
+public record CustomerService(
+        CustomerRepository customerRepository,
+        FraudClient fraudClient,
+        RabbitMQMessageProducer rabbitMQMessageProducer
+) {
     public void registerCustomer(CustomerRegistrationRequest request) {
         Customer customer = Customer.builder()
                 .firstName(request.firstName())
@@ -27,13 +30,15 @@ public record CustomerService(CustomerRepository customerRepository, Notificatio
         }
 
         // send notification
-        // todo : make it async, add to queue
-        notificationClient.sendNotification(
-                new NotificationRequest(
-                        customer.getId(),
-                        customer.getEmail(),
-                        String.format("Hi %s, welcome !", customer.getFirstName())
-                )
+        NotificationRequest notificationRequest = new NotificationRequest(
+                customer.getId(),
+                customer.getEmail(),
+                String.format("Hi %s, welcome !", customer.getFirstName())
+        );
+        rabbitMQMessageProducer.publish(
+                notificationRequest,
+                "internal.exchange",
+                "internal.notification.routing-key"
         );
     }
 }
