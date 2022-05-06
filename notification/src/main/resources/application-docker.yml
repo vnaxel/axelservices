@@ -19,11 +19,11 @@ spring:
         base-url: http://zipkin:9411
     rabbitmq:
         addresses: rabbitmq:5672
-eurkea:
+eurekea:
     client:
         service-url:
             defaultZone: http://eureka-server:8761/eureka
-        fetch-registery: true
+        fetch-registry: true
         register-with-eureka: true
 
 rabbitmq:
